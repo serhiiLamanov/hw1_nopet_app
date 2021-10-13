@@ -10,21 +10,21 @@
 </head>
 <body>
     <div id="notes_app"></div>
-    <script type="module"> 
-        import DataNotes from '/js/DataNotes.js';
+    <script type="module">
+        import DataNotes from '/js/DataNotes.js'
         import ViewNotes from '/js/ViewNotes.js'
+        import NoteEditor from '/js/NoteEditor.js'
 
-        const NOTES = [{name:"Shopping list", created:"April, 20 2021", category:0, content:"Tomatoes, bread", archived:false},
-                        {name:"The theory of evolution", created:"April 27, 2021", category:1, content:"The evolution ", archived:false},
-                        {name:"New Feature", created:"May 05, 2021", category:2, content:"Implement new", archived:false},
-                        {name:"William Gaddis", created:"May 07, 2021", category:3, content:"Power doesn't corrupt people; people corrupt power", archived:false},
-                        {name:"Books", created:"May 15, 2021", category:0, content:"The Lean Startup", archived:false},
-                        {name:"Dentist appointment", created:"May 01, 2021", category:0, content:"I’m gonna have a dentist appointment on the 3/5/2021, I moved it from 5/5/2021", archived:true},
-                        {name:"Minority Report", created:"May 35, 2021", category:1, content:"Bla bla bla", archived:true}
+        const NOTES = [{name:"Shopping list", created:"2021-04-05", category:0, content:"Tomatoes, bread", archived:false},
+                        {name:"The theory of evolution", created:"2021-04-27", category:1, content:"The evolution ", archived:false},
+                        {name:"New Feature", created:"2021-05-05", category:2, content:"Implement new", archived:false},
+                        {name:"William Gaddis", created:"2021-05-07", category:3, content:"Power doesn't corrupt people; people corrupt power", archived:false},
+                        {name:"Books", created:"2021-05-15", category:0, content:"The Lean Startup", archived:false},
+                        {name:"Dentist appointment", created:"2021-05-01", category:0, content:"I’m gonna have a dentist appointment on the 3/5/2021, I moved it from 5/5/2021", archived:true},
+                        {name:"Minority Report", created:"2021-06-06", category:1, content:"Bla bla bla", archived:true}
                     ]
 
         const clickEvents = {
-            editNoteProcessing: (index)=>console.log('editNote',index),
             archiveNoteProcessing: index => {
                 try{
                     dataNotes.archiveNote(index)
@@ -55,12 +55,43 @@
                 viewNotes.deleteNote(index)
                 viewNotes.updateSummaries(dataNotes.summaries)                
             },
+            editNoteProcessing: (index) =>{
+                let note={}
+                try{
+                    note = dataNotes.getNote(index)
+                }catch(error){
+                    console.error(error)
+                    return
+                }
+                new NoteEditor(notesRoot, note => clickEvents.updateNote(index, note), note)
+            },
+            updateNote: (index, note) => {
+                try{
+                    dataNotes.updateNote(index, note)
+                }catch(error){
+                    console.error(error)
+                    return
+                }
+                viewNotes.updateNote(index, note)
+            },
+            addNote: note => {
+                try{
+                    dataNotes.addNote(note)
+                }catch(error){
+                    console.error(error)
+                    return
+                }
+                viewNotes.addNote(note)
+                viewNotes.updateSummaries(dataNotes.summaries)  
+            },
+            newNoteCreating: () =>{
+                new NoteEditor(notesRoot, clickEvents.addNote)
+            },
         } 
-        //  console.log(NOTES);
+        
+        const notesRoot = document.querySelector("#notes_app")
         const dataNotes = new DataNotes(NOTES)
-        const viewNotes = new ViewNotes(document.querySelector("#notes_app"), clickEvents, dataNotes.notes, dataNotes.summaries)
-
-
+        const viewNotes = new ViewNotes(notesRoot, clickEvents, dataNotes.notes, dataNotes.summaries)
     </script>
 </body>
 </html>

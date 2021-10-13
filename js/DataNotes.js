@@ -6,6 +6,9 @@ export default class{
     get notes(){
         return this.#notes
     }
+    getNote(index){
+        return this.#notes[index]
+    }
     addNote(note){
         this.#notes.push(note)
     }

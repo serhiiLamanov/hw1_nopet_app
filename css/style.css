@@ -1,0 +1,69 @@
+#notes_app table{
+    border-spacing: 0 .5em;
+    font-family: Roboto, sans-serif;
+}
+#notes_app table thead th{
+    color: white;
+    background-color: #999;
+    padding: .5em;
+}
+#notes_app table tbody tr{
+    background-color: #e8eaf5;
+}
+#notes_app table tbody tr.archived{
+    background-color: #ececec;
+    display: none;
+}
+#notes_app table tbody.showArchived tr.archived{
+    background-color: #ececec;
+    display: table-row;
+}
+#notes_app table tbody td{
+    border: none;
+    padding: .5em;
+    color: #666;
+}
+#notes_app table tr td:first-child{
+    color: black;
+}
+
+#notes_app thead th:first-child {
+    border-radius: .5em 0 0 .5em;
+}
+#notes_app thead th:last-child {
+    border-radius: 0 .5em .5em 0;
+}
+
+
+#notes_app table tfoot td{
+    text-align: right;
+}
+
+#notes_app table thead button,
+#notes_app table tbody button{
+    border: none;
+    color: inherit;
+    background-color: inherit;
+}
+#notes_app table thead button:hover,
+#notes_app table tbody button:hover,
+#notes_app table thead button:active,
+#notes_app table tbody button:active{
+    filter: brightness(60%);
+}
+
+#notes_app table thead button:active,
+#notes_app table tbody button:active {
+    outline: 1px solid #fff;
+    transform: scale(0.9);
+}
+
+#notes_app table tbody button.unarchive-btn{
+    display: none;
+}
+#notes_app table tbody tr.archived button.unarchive-btn{
+    display: inline;
+}
+#notes_app table tbody tr.archived button.archive-btn{
+    display: none;
+}

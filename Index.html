@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>notes app</title>
+</head>
+<body>
+    <div id="notes_app"></div>
+    <script type="module"> 
+        import DataNotes from '/js/DataNotes.js';
+        import ViewNotes from '/js/ViewNotes.js'
+
+        const NOTES = [{name:"Shopping list", created:"April, 20 2021", category:0, content:"Tomatoes, bread", archived:false},
+                        {name:"The theory of evolution", created:"April 27, 2021", category:1, content:"The evolution ", archived:false},
+                        {name:"New Feature", created:"May 05, 2021", category:2, content:"Implement new", archived:false},
+                        {name:"William Gaddis", created:"May 07, 2021", category:3, content:"Power doesn't corrupt people; people corrupt power", archived:false},
+                        {name:"Books", created:"May 15, 2021", category:0, content:"The Lean Startup", archived:false},
+                        {name:"Dentist appointment", created:"May 01, 2021", category:0, content:"I’m gonna have a dentist appointment on the 3/5/2021, I moved it from 5/5/2021", archived:true},
+                        {name:"Minority Report", created:"May 35, 2021", category:1, content:"Bla bla bla", archived:true}
+                    ]
+
+        const clickEvents = {
+            editNoteProcessing: (index)=>console.log('editNote',index),
+            archiveNoteProcessing: index => {
+                try{
+                    dataNotes.archiveNote(index)
+                }catch(error){
+                    console.error(error)
+                    return
+                }
+                viewNotes.archiveNote(index)
+                viewNotes.updateSummaries(dataNotes.summaries)                
+            },
+            unarchiveNoteProcessing: index => {
+                try{
+                    dataNotes.unarchiveNote(index)
+                }catch(error){
+                    console.error(error)
+                    return
+                }
+                viewNotes.unarchiveNote(index)
+                viewNotes.updateSummaries(dataNotes.summaries)                
+            },
+            deleteNoteProcessing: index => {
+                try{
+                    dataNotes.deleteNote(index)
+                }catch(error){
+                    console.error(error)
+                    return
+                }
+                viewNotes.deleteNote(index)
+                viewNotes.updateSummaries(dataNotes.summaries)                
+            },
+        } 
+        //  console.log(NOTES);
+        const dataNotes = new DataNotes(NOTES)
+        const viewNotes = new ViewNotes(document.querySelector("#notes_app"), clickEvents, dataNotes.notes, dataNotes.summaries)
+
+
+    </script>
+</body>
+</html>

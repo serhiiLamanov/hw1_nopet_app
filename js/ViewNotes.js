@@ -41,7 +41,7 @@ export default class ViewNotes{
         root.querySelector("tfoot button").addEventListener('click', clickEvents.newNoteCreating)
     }
 
-    #renderRowNote({name, created, category, content, archived}){
+    #renderRowNote({name, created, category, content, dates, archived}){
         const DATE_OPTIONS = {
             month: 'long',
             day: 'numeric',
@@ -51,7 +51,7 @@ export default class ViewNotes{
         if(archived)
             row.className = ("archived")
         
-        const html = `<td>${name}</td><td>${new Date(created).toLocaleDateString('en-US', DATE_OPTIONS)}</td><td>${CATEGORIES[category]}</td><td>${content}</td><td>dates</td>`
+        const html = `<td>${name}</td><td>${new Date(created).toLocaleDateString('en-US', DATE_OPTIONS)}</td><td>${CATEGORIES[category]}</td><td>${content}</td><td>${dates}</td>`
         row.insertAdjacentHTML('beforeend',html)
 
         const btnCell = document.createElement("td")
@@ -90,16 +90,16 @@ export default class ViewNotes{
     unarchiveNote(index){
         this.#tbodyNotes.rows[index].classList.remove("archived")
     }
-    updateNote(index, {name, created, category, content, archived}){
+    updateNote(index, {name, created, category, content, dates, archived}){
         const row = this.#tbodyNotes.rows[index]
         archived ? row.classList.add("archived") : row.classList.remove("archived")
-        
+
         const cells = row.cells
         cells[0].innerHTML = name
         cells[1].innerHTML = created
         cells[2].innerHTML = CATEGORIES[category]
         cells[3].innerHTML = content
-        // cells[4].innerHTML = name
+        cells[4].innerHTML = dates
     }
     addNote(note){
         this.#tbodyNotes.append(this.#renderRowNote(note))

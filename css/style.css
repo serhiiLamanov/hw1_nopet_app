@@ -87,8 +87,11 @@
 #notes_app form select{
     padding: .5em;
 }
+#notes_app form input[type="text"]{
+    min-width: 15em;
+}
 #notes_app form input[name="content"]{
-    min-width: 31em;
+    min-width: 40em;
 }
 #notes_app form{
     background-color: #e8eaf5;
@@ -101,5 +104,5 @@
     margin: 1em 0;
 }
 #notes_app form div:last-child>*{
-    flex-basis: 25%;
+    flex-basis: 20%;
 }

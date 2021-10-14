@@ -1,6 +1,11 @@
+#notes_app {
+    width: max-content;
+    position: relative;
+    font-family: Roboto, sans-serif;
+}
+   
 #notes_app table{
     border-spacing: 0 .5em;
-    font-family: Roboto, sans-serif;
 }
 #notes_app table thead th{
     color: white;
@@ -66,4 +71,38 @@
 }
 #notes_app table tbody tr.archived button.archive-btn{
     display: none;
+}
+
+#notes_app div.editorsBackdrop{
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, .6);
+}
+#notes_app form input,
+#notes_app form select{
+    padding: .5em;
+}
+#notes_app form input[type="text"]{
+    min-width: 15em;
+}
+#notes_app form input[name="content"]{
+    min-width: 40em;
+}
+#notes_app form{
+    background-color: #e8eaf5;
+    padding: 1em;
+}
+#notes_app form div{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1em 0;
+}
+#notes_app form div:last-child>*{
+    flex-basis: 20%;
 }

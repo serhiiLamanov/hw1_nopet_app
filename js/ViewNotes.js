@@ -1,69 +1,72 @@
+import {CATEGORIES} from './CATEGORIES.js'
 export default class ViewNotes{
-    #CATEGORIES = ["Task", "Random Thought", "Idea", "Quote"]
+    #NOTE_ACTIONS = ["edit", "archive", "unarchive", "delete"]
     #tbodyNotes
     #tbodySummary
-    #clickEvents
     constructor(root, clickEvents, notes=[], summaries){
-        this.#clickEvents = clickEvents
-
-        const html = `
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th><th>Created</th><th>Category</th><th>Content</th><th>Dates</th>
-                    <th>
-                        <button title="show archived notes" class="material-icons">archive</button>
-                        <button title="delete all notes (not implemented)" class="material-icons">delete</button>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-               ${notes.reduce((acc,curr) => acc+this.#createRowNote(curr),'')}
-            </tbody>
-            <tfoot>
-                <tr><td colspan="6"><button>Create note</button></td></tr>
-            </tfoot>
-        </table>
-        <table>
-            <thead><tr><th>Note category</th><th>Active</th><th>Archived</th></tr></thead>
-            <tbody>
-                ${this.#CATEGORIES.reduce((acc,curr) => acc+`<tr><td>${curr}</td><td>0</td><td>0</td></tr>`, "")}
-            </tbody>
-        </table>
-        `
+        this.#NOTE_ACTIONS.forEach(action => this[`click${action}Note`] = ({target}) => clickEvents[action+"NoteProcessing"](this.#getNoteIndex(target)))
+        const html = `<table>
+                        <thead>
+                            <tr>
+                                <th>Name</th><th>Created</th><th>Category</th><th>Content</th><th>Dates</th>
+                                <th>
+                                    <button title="show archived notes" class="material-icons">archive</button>
+                                    <button title="delete all notes (not implemented)" class="material-icons">delete</button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        
+                        </tbody>
+                        <tfoot>
+                            <tr><td colspan="6"><button>Create note</button></td></tr>
+                        </tfoot>
+                    </table>
+                    <table>
+                        <thead><tr><th>Note category</th><th>Active</th><th>Archived</th></tr></thead>
+                        <tbody>
+                            ${CATEGORIES.reduce((acc,curr) => acc+`<tr><td>${curr}</td><td>0</td><td>0</td></tr>`, "")}
+                        </tbody>
+                    </table>`
+        
         root.insertAdjacentHTML('beforeend', html)
 
         const tbodies = root.querySelectorAll("tbody")
         this.#tbodyNotes = tbodies[0]
         this.#tbodySummary = tbodies[1]
-
+        this.#tbodyNotes.append(...notes.map(note =>this.#renderRowNote(note)))
         this.updateSummaries(summaries)
 
-        root.querySelector("thead button").addEventListener('click', this.#showHideArchivedNotes);
+        root.querySelector("thead button").addEventListener('click', this.#showHideArchivedNotes)
+        root.querySelector("tfoot button").addEventListener('click', clickEvents.newNoteCreating)
+    }
 
-        ["edit", "archive", "unarchive", "delete"].forEach(action =>{ 
-            this[`click${action}Note`] = ({target}) => this.#clickEvents[action+"NoteProcessing"](this.#getNoteIndex(target))
-            this.#tbodyNotes.querySelectorAll(`button.${action}-btn`).forEach(button => button.addEventListener('click', this[`click${action}Note`]))
-        })
+    #renderRowNote({name, created, category, content, dates, archived}){
+        const DATE_OPTIONS = {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        }
+        const row = document.createElement("tr")
+        if(archived)
+            row.className = ("archived")
         
-    }
+        const html = `<td>${name}</td><td>${new Date(created).toLocaleDateString('en-US', DATE_OPTIONS)}</td><td>${CATEGORIES[category]}</td><td>${content}</td><td>${dates}</td>`
+        row.insertAdjacentHTML('beforeend',html)
 
-    #createRowNote({name, created, category, content, archived}){
-        const classArchived = archived ? " class='archived'" : ""
-        return`
-        <tr${classArchived}>
-            <td>${name}</td><td>${created}</td><td>${this.#CATEGORIES[category]}</td><td>${content}</td><td>dates</td>
-            <td>
-                <button title="edit note" class="material-icons edit-btn">edit</button>
-                <button title="archive note" class="material-icons archive-btn">archive</button>
-                <button title="unarchive note" class="material-icons unarchive-btn">unarchive</button>
-                <button title="delete note" class="material-icons delete-btn">delete</button>
-            </td>    
-        </tr>`
+        const btnCell = document.createElement("td")
+        this.#NOTE_ACTIONS.forEach(action =>{
+            const btn = document.createElement("button")
+            btn.innerText = action
+            btn.title = action + " note"
+            btn.className = `material-icons ${action}-btn`
+            btn.addEventListener('click', this[`click${action}Note`])
+            btnCell.appendChild(btn)
+        })
+        row.appendChild(btnCell)
+        return row
     }
-    // #createRowCategory(name, {active, archived}){
-    //     return `<tr><td>${name}</td><td>${active}</td><td>${archived}</td></tr>`
-    // }
+    
     #showHideArchivedNotes = () => this.#tbodyNotes.classList.toggle("showArchived")
 
     #getNoteIndex = element => [...this.#tbodyNotes.rows].indexOf(element.closest('tr'))
@@ -87,12 +90,18 @@ export default class ViewNotes{
     unarchiveNote(index){
         this.#tbodyNotes.rows[index].classList.remove("archived")
     }
-    updateNode(index, {name, created, category, content, archived}){
-        const cells = this.#tbodyNotes.rows[index].cells
+    updateNote(index, {name, created, category, content, dates, archived}){
+        const row = this.#tbodyNotes.rows[index]
+        archived ? row.classList.add("archived") : row.classList.remove("archived")
+
+        const cells = row.cells
         cells[0].innerHTML = name
         cells[1].innerHTML = created
-        cells[2].innerHTML = this.#CATEGORIES[category]
+        cells[2].innerHTML = CATEGORIES[category]
         cells[3].innerHTML = content
-        // cells[4].innerHTML = name
+        cells[4].innerHTML = dates
+    }
+    addNote(note){
+        this.#tbodyNotes.append(this.#renderRowNote(note))
     }
 }
